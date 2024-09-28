@@ -347,6 +347,9 @@ ggsave(p,
 
 # -----------------
 
+
+
+
 #proporções
 
 prop <- waves_df  %>%
@@ -356,3 +359,32 @@ prop <- waves_df  %>%
   ungroup() %>%
   mutate(proportion = total_freq / sum(total_freq))  # Calculando proporção geral
 
+
+# Supondo que o dataframe original seja o waves_df
+waves_df_wide <- waves_df %>%
+  filter(cluster_category != "NA") %>% # Remover valores "NA" em cluster_category
+  group_by(cluster_category, wave) %>% # Agrupar pelas categorias e waves
+  summarise(Freq = sum(Freq)) %>% # Somar as frequências para categorias iguais
+  ungroup() %>%
+  mutate(cluster_category = fct_relevel(cluster_category, 
+                                        "Goverment Deliberation", 
+                                        "SSR Rhetoric", 
+                                        "Political Debate", 
+                                        "Macroeconomic", 
+                                        "Legislative Process", 
+                                        "State & Municipal Reform")) %>% # Reordenar as categorias
+  pivot_wider(
+    names_from = wave, # As colunas serão as waves
+    values_from = Freq, # Os valores das células serão os valores de Freq
+    values_fill = list(Freq = 0) # Preencher com 0 caso não tenha valores
+  ) %>%
+  rowwise() %>%
+  mutate(TOTAL = sum(c_across(where(is.numeric)))) # Adiciona a coluna de TOTAL
+# Visualizar a tabela transformada
+print(waves_df_wide)
+
+total_geral <- sum(waves_df_wide %>% select(-cluster_category, -TOTAL), na.rm = TRUE)
+
+# Calcular o percentual de cada célula em relação ao total geral, excluindo a coluna TOTAL
+waves_df_percentual <- waves_df_wide %>%
+  mutate(across(where(is.numeric) & !matches("TOTAL"), ~ (. / total_geral) * 100))
