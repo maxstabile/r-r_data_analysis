@@ -392,33 +392,3 @@ waves_df_percentual <- waves_df_wide %>%
 
 # ---------- CALCULANDO OS FRAMES
 
-# Carregar o pacote stringr
-library(stringr)
-
-# Criar novas colunas com as contagens de "redução" associada a "gastos" e "aumento" associada a "investimentos"
-fssr_noticias_lemmatizado <- fssr_noticias_lemmatizado %>%
-  mutate(
-    reducao_gastos = str_count(texto, "(redução.*gastos|gastos.*redução)"),
-    aumento_investimentos = str_count(texto, "(aumento.*investimentos|investimentos.*aumento)"),
-  )
-
-
-sum(fssr_noticias_lemmatizado$aumento_investimentos)
-sum(fssr_noticias_lemmatizado$reducao_gastos)
-sum(fssr_noticias_lemmatizado$investimento_saude_educacao)
-
-
-
-# Criando uma tabela cruzada com dplyr
-tabela_somas <- fssr_noticias_lemmatizado %>%
-  group_by(wave) %>%
-  summarise(
-    soma_reducao_gastos = sum(reducao_gastos, na.rm = TRUE),
-    soma_aumento_investimentos = sum(aumento_investimentos, na.rm = TRUE),
-    soma_investimento_saude_educacao = sum(investimento_saude_educacao, na.rm = TRUE)
-  )
-
-# Visualizar a tabela com as somas por wave
-tabela_somas
- # Visualizar as primeiras linhas da base atualizada
-head(fssr_noticias_lemmatizado)

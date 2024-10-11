@@ -1,7 +1,17 @@
 
+pacotes <- c("stringr", "dplyr", "readr")
 
-library(stringr)
-library(dplyr)
+# Função para verificar e instalar pacotes
+instalar_pacotes <- function(pacotes) {
+  pacotes_ausentes <- pacotes[!(pacotes %in% installed.packages()[, "Package"])]
+  if(length(pacotes_ausentes)) install.packages(pacotes_ausentes)
+}
+
+# Chamar a função
+instalar_pacotes(pacotes)
+
+# Carregar os pacotes
+lapply(pacotes, library, character.only = TRUE)
 
 
 
@@ -39,16 +49,48 @@ segmentos_df <- fssr_noticias_lemmatizado %>%
   unnest(segmentos) %>%
   ungroup()
 
+
+#colocar a coluna
+
+segmentos_df <- segmentos_df %>%
+  mutate(
+    reducao_gastos = str_count(segmentos, "(redução.*gastos|gastos.*redução)"),
+    saude_educacao = str_count(segmentos, "(saúde.*educação|educação.*saúde)"),
+    investimento_saude_educacao = str_count(segmentos, "(?i)investimento.*(saúde|educação)|(saúde|educação).*investimento"),
+    aumento_investimentos = str_count(segmentos, "(aumento.*investimentos|investimentos.*aumento)"),
+    reducao_deficit_gastos_despesas = str_count(segmentos, "(?i)redução.*(déficit|gastos|despesas)|(déficit|gastos|despesas).*redução")
+    
+  )
+
+
+#exportando
+
+segmentos_df$segmentos <- sapply(segmentos_df$segmentos, function(x) paste(x, collapse = " "))
+
+
+segmentos_filtrados <- segmentos_df %>%
+  filter(reducao_gastos > 0 | aumento_investimentos > 0 | saude_educacao > 0 | investimento_saude_educacao > 0)
+
+# Agora você pode salvar o data.frame em um arquivo CSV
+write.csv(segmentos_filtrados, "data/press/segmentos.csv", row.names = FALSE)
+
+
 # Calcular as estatísticas de presença por segmento e wave
 estatisticas_por_segmento <- segmentos_df %>%
   mutate(
     reducao_gastos = str_count(segmentos, "(redução.*gastos|gastos.*redução)"),
+    saude_educacao = str_count(segmentos, "(saúde.*educação|educação.*saúde)"),
+    investimento_saude_educacao = str_count(segmentos, "(?i)investimento.*(saúde|educação)|(saúde|educação).*investimento"),
     aumento_investimentos = str_count(segmentos, "(aumento.*investimentos|investimentos.*aumento)"),
+    reducao_deficit_gastos_despesas = str_count(segmentos, "(?i)redução.*(déficit|gastos|despesas)|(déficit|gastos|despesas).*redução")
   ) %>%
   group_by(wave) %>%
   summarise(
     total_reducao_gastos = sum(reducao_gastos, na.rm = TRUE),
     total_aumento_investimentos = sum(aumento_investimentos, na.rm = TRUE),
+    saude_educacao = sum(saude_educacao, na.rm = TRUE),
+    investimento_saude_educacao = sum(investimento_saude_educacao, na.rm = TRUE),
+    reducao_deficit_gastos_despesas = sum(reducao_deficit_gastos_despesas, na.rm = TRUE),
     .groups = 'drop'
   )
 
