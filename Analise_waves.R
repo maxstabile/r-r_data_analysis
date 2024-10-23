@@ -176,11 +176,11 @@ lista <- readRDS("data/press/rainette.rds")
 
 # WAVE 1 - FAZENDO A ANÁLISE DE CADA RODADA.
 
-rainette_explor(
-  res = lista[["Wave_1"]]$res1,
-  dtm = lista[["Wave_1"]]$dtm,
-  corpus_src = lista[["Wave_1"]]$corpus_split
-) 
+#rainette_explor(
+#  res = lista[["Wave_1"]]$res1,
+#  dtm = lista[["Wave_1"]]$dtm,
+#  corpus_src = lista[["Wave_1"]]$corpus_split
+#) 
 
 #CRIANDO UMA LISTA
 cluster_categories <- list()
@@ -193,11 +193,11 @@ cluster_categories[["Wave_1"]] <- c("SSR Rhetoric", "Macroeconomic", "Goverment 
 # WAVE 2 
 ###
 
-rainette_explor(
-  res = lista[["Wave_2"]]$res1,
-  dtm = lista[["Wave_2"]]$dtm,
-  corpus_src = lista[["Wave_2"]]$corpus_split
-)
+#rainette_explor(
+#  res = lista[["Wave_2"]]$res1,
+#  dtm = lista[["Wave_2"]]$dtm,
+#  corpus_src = lista[["Wave_2"]]$corpus_split
+#)
 
 
 cluster_categories[["Wave_2"]] <- c("SSR Rhetoric", "Macroeconomic", "Political Debate", "Goverment Deliberation")
@@ -208,11 +208,11 @@ cluster_categories[["Wave_2"]] <- c("SSR Rhetoric", "Macroeconomic", "Political 
 # WAVE 3 
 ###
 
-rainette_explor(
-  res = lista[["Wave_3"]]$res1,
-  dtm = lista[["Wave_3"]]$dtm,
-  corpus_src = lista[["Wave_3"]]$corpus_split
-)
+#rainette_explor(
+#  res = lista[["Wave_3"]]$res1,
+#  dtm = lista[["Wave_3"]]$dtm,
+#  corpus_src = lista[["Wave_3"]]$corpus_split
+#)
 
 cluster_categories[["Wave_3"]] <- c("Macroeconomic", "SSR Rhetoric", "Political Debate", "Legislative Process")
 
@@ -223,11 +223,11 @@ cluster_categories[["Wave_3"]] <- c("Macroeconomic", "SSR Rhetoric", "Political 
 ###
 
 
-rainette_explor(
-  res = lista[["Wave_4"]]$res1,
-  dtm = lista[["Wave_4"]]$dtm,
-  corpus_src = lista[["Wave_4"]]$corpus_split
-)
+#rainette_explor(
+#  res = lista[["Wave_4"]]$res1,
+#  dtm = lista[["Wave_4"]]$dtm,
+#  corpus_src = lista[["Wave_4"]]$corpus_split
+#)
 
 cluster_categories[["Wave_4"]] <- c("NA", "Macroeconomic", "State & Municipal Reform", "Legislative Process", "Political Debate")
 
@@ -238,11 +238,11 @@ cluster_categories[["Wave_4"]] <- c("NA", "Macroeconomic", "State & Municipal Re
 ###
 
 
-rainette_explor(
-  res = lista[["Wave_5"]]$res1,
-  dtm = lista[["Wave_5"]]$dtm,
-  corpus_src = lista[["Wave_5"]]$corpus_split
-)
+#rainette_explor(
+#  res = lista[["Wave_5"]]$res1,
+#  dtm = lista[["Wave_5"]]$dtm,
+#  corpus_src = lista[["Wave_5"]]$corpus_split
+#)
 
 
 cluster_categories[["Wave_5"]] <- c("SSR Rhetoric", "Political Debate", "Goverment Deliberation", "NA")
@@ -320,35 +320,35 @@ p <- waves_df |>
   ) |>
   filter(cluster_category != "NA") |>
   ggplot(aes(x = Freq, y = fct_rev(cluster_category))) + # Invertendo a ordem de exibição
-  geom_bar(stat = "identity", color = "black", fill = "#C0C0C0") +
-  facet_grid(.~wave, scales = "free_x") +
-  coord_cartesian(xlim = c(0, 3200), ylim = c(0, 6.85), expand = FALSE) +
+  geom_bar(stat = "identity", color = "black", fill = "#C0C0C0", width = 0.6) +  # Adjusted bar width for more spacing
+  facet_grid(.~wave, scales = "free_x", space = "free_x") +
+  coord_cartesian(xlim = c(0, 3001), ylim = c(0, 6.85), expand = FALSE) +
   labs(x = NULL, y = NULL) +
   theme_light() + 
   theme(
     legend.position = "none",
-    axis.text.y = element_text(size = 14, face = "bold"),
-    axis.text.x = element_text(size = 12, face = "italic", angle = 0, hjust = 0.5),
+    axis.text.y = element_text(size = 18, face = "bold"),
+    axis.text.x = element_text(size = 14, face = "italic", angle = 0, hjust = 0.5),
     strip.text = element_text(size = 16, face = "bold"),
     plot.background = element_rect(colour = "white"),
+    strip.background = element_rect(fill="gray35")
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
     panel.grid.major.y = element_line(color = "gray", size = 0.5),
-    panel.border = element_rect(color = "black", fill = NA, size = 1)
+    panel.border = element_rect(color = "black", fill = NA, size = 1),
+    panel.spacing = unit(1.5, "lines")  # Added more spacing between facets
   )
+p
 
 
 ggsave(p, 
   filename = "images/waves_clusters.png", 
   dpi = 500, 
-  width = 18, 
+  width = 20, 
   height = 6
 )
 
 # -----------------
-
-
-
 
 #proporções
 
